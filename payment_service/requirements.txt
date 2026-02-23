@@ -1,0 +1,5 @@
+djangorestframework
+pika
+paypal-checkout-serversdk
+django
+mysqlclient
