@@ -1,5 +1,5 @@
 import uuid
-from django.db import models,transaction
+from django.db import models
 
 
 class Ticket(models.Model):
@@ -10,7 +10,11 @@ class Ticket(models.Model):
         RESOLVED = "RESOLVED", "Resolved"
         CLOSED = "CLOSED", "Closed"
 
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False
+    )
 
     user_id = models.UUIDField()
     worker_id = models.UUIDField(null=True, blank=True)
@@ -28,23 +32,15 @@ class Ticket(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.title} - {self.status}"
-    
-@transaction.atomic
-def take_ticket(ticket_id, worker_id):
-
-    ticket = Ticket.objects.select_for_update().get(id=ticket_id)
-
-    if ticket.status != Ticket.Status.OPEN:
-        raise Exception("Ticket ya fue tomado")
-
-    ticket.worker_id = worker_id
-    ticket.status = Ticket.Status.IN_PROGRESS
-    ticket.save()
+        return f"{self.title} ({self.status})"
     
 class TicketHistory(models.Model):
 
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False
+    )
 
     ticket = models.ForeignKey(
         Ticket,
@@ -58,6 +54,3 @@ class TicketHistory(models.Model):
     changed_by = models.UUIDField()
 
     changed_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"{self.ticket.id} {self.old_status} → {self.new_status}"

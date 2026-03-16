@@ -20,7 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-kmfp+h2@n7rw()rb-_pzo*=tq5&&9ahs$#re^0oszsoz$e^f-3'
+SECRET_KEY = 'django-insecure-^u!pzlnh^v87*)ejnaly+tuqua5^tekjx*71xz3357i^_k&3w4'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -68,8 +68,17 @@ TEMPLATES = [
     },
 ]
 
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTStatelessUserAuthentication",
+    )
+}
+
 WSGI_APPLICATION = 'support.wsgi.application'
 
+SIMPLE_JWT = {
+    "SIGNING_KEY": SECRET_KEY,
+}
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
