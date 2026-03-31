@@ -92,8 +92,8 @@ DATABASES = {
     }
 }
 
-#servicios
-GAME_SERVICE_URL = "http://localhost:8002/api/games/"
+#servicio de game en caso este en otro local
+GAME_SERVICE_URL = "http://localhost:8001/api/games/"
 
 
 

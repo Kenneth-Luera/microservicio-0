@@ -5,7 +5,6 @@ from channels.db import database_sync_to_async
 
 @database_sync_to_async
 def save_message(conversation_id, sender_id, message):
-
     from chat.chatApp.models import Message, Conversation
 
     conversation = Conversation.objects.get(id=conversation_id)
@@ -21,9 +20,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def connect(self):
 
+        # 🔥 usar user_id directamente (no user)
         self.user_id = self.scope.get("user_id")
 
+        print("USER_ID EN CONNECT:", self.user_id)
+
         if not self.user_id:
+            print("CERRANDO: no hay user_id")
             await self.close()
             return
 
@@ -40,10 +43,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def disconnect(self, close_code):
 
-        await self.channel_layer.group_discard(
-            self.room_group_name,
-            self.channel_name
-        )
+        if hasattr(self, "room_group_name"):
+            await self.channel_layer.group_discard(
+                self.room_group_name,
+                self.channel_name
+            )
 
 
     async def receive(self, text_data):
@@ -51,11 +55,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
         data = json.loads(text_data)
 
         message = data["message"]
-        sender_id = self.user_id
 
         await save_message(
             self.conversation_id,
-            sender_id,
+            self.user_id,
             message
         )
 
@@ -64,7 +67,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             {
                 "type": "chat_message",
                 "message": message,
-                "sender_id": sender_id
+                "sender_id": self.user_id
             }
         )
 

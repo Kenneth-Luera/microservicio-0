@@ -2,7 +2,6 @@ import jwt
 from django.conf import settings
 from channels.middleware import BaseMiddleware
 from urllib.parse import parse_qs
-from asgiref.sync import sync_to_async
 
 
 class JWTAuthMiddleware(BaseMiddleware):
@@ -10,26 +9,28 @@ class JWTAuthMiddleware(BaseMiddleware):
     async def __call__(self, scope, receive, send):
 
         query_string = scope["query_string"].decode()
-
         params = parse_qs(query_string)
 
         token = params.get("token")
 
         if token:
-            token = token[0]
+            token = token[0]  
 
             try:
-                payload = jwt.decode(
+                decoded_data = jwt.decode(
                     token,
                     settings.SECRET_KEY,
                     algorithms=["HS256"]
                 )
 
-                scope["user_id"] = payload["user_id"]
+                scope["user_id"] = decoded_data.get("user_id")
 
-            except jwt.InvalidTokenError:
+                print("DECODED:", decoded_data)
+                print("USER_ID:", scope["user_id"])
+
+            except Exception as e:
+                print("JWT ERROR:", str(e))
                 scope["user_id"] = None
-
         else:
             scope["user_id"] = None
 
