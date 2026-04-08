@@ -20,7 +20,7 @@ class RegisterSerializer(serializers.ModelSerializer):
             password=validated_data['password']
         )
         return user
-    
+
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
     @classmethod
@@ -50,3 +50,8 @@ class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = "__all__"
+
+class ProfileUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = ['nickname', 'age', 'gender', 'description', 'avatar', 'frame', 'background']

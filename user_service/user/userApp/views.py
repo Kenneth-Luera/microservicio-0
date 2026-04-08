@@ -6,6 +6,7 @@ from django.contrib.auth import get_user_model
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
+from user.userApp.serializers import ProfileUpdateSerializer
 
 
 User = get_user_model()
@@ -45,6 +46,16 @@ def my_profile(request):
     profile = request.user.profile
     serializer = ProfileSerializer(profile)
     return Response(serializer.data)
+
+@api_view(['PATCH'])
+@permission_classes([IsAuthenticated])
+def update_profile(request):
+    profile = request.user.profile
+    serializer = ProfileUpdateSerializer(profile, data=request.data, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(serializer.errors, status=400)
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
