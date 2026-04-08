@@ -47,6 +47,14 @@ def my_profile(request):
     serializer = ProfileSerializer(profile)
     return Response(serializer.data)
 
+@api_view(['GET'])
+@permission_classes([permissions.AllowAny])
+def list_profiles(request):
+    from user.userApp.models import Profile
+    profiles = Profile.objects.select_related('user').all()
+    serializer = ProfileSerializer(profiles, many=True)
+    return Response(serializer.data)
+
 @api_view(['PATCH'])
 @permission_classes([IsAuthenticated])
 def update_profile(request):
