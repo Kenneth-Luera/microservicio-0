@@ -1,7 +1,7 @@
 
 from django.contrib import admin
 from django.urls import path
-from user.userApp.views import RegisterView, get_user_data, internal_user_detail, my_profile, update_profile, list_profiles
+from user.userApp.views import RegisterView, get_user_data, internal_user_detail, my_profile, update_profile, list_profiles, profile_detail
 from rest_framework_simplejwt.views import TokenRefreshView
 from user.userApp.views import CustomTokenObtainPairView
 
@@ -15,7 +15,7 @@ urlpatterns = [
 
     path('api/me/', get_user_data),
     path('internal/users/<uuid:user_id>/', internal_user_detail),
-    
+    path('profiles/<uuid:profile_id>/', profile_detail, name='profile-detail'),
     path('api/profile/me/', my_profile),
     path('profiles/', list_profiles, name='list-profiles'),
     path('profile/update/', update_profile, name='update-profile'),

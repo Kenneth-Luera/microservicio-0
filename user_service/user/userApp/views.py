@@ -49,6 +49,16 @@ def my_profile(request):
 
 @api_view(['GET'])
 @permission_classes([permissions.AllowAny])
+def profile_detail(request, profile_id):
+    try:
+        profile = Profile.objects.select_related('user').get(id=profile_id)
+        serializer = ProfileSerializer(profile)
+        return Response(serializer.data)
+    except Profile.DoesNotExist:
+        return Response({"error": "Profile not found"}, status=404)
+
+@api_view(['GET'])
+@permission_classes([permissions.AllowAny])
 def list_profiles(request):
 
     profiles = Profile.objects.select_related('user').all()
