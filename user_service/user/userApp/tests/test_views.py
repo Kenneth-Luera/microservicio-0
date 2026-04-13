@@ -67,7 +67,7 @@ def test_internal_user_not_found(client):
 def test_my_profile(auth_client):
     client, user = auth_client
 
-    response = client.get("/api/profile/me/")  # 🔥 FIX
+    response = client.get("/api/profile/me/")
 
     assert response.status_code == 200
 

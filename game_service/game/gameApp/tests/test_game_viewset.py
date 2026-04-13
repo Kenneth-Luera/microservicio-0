@@ -18,7 +18,6 @@ def create_user():
     return _create_user
 
 
-# 🔥 USER NORMAL
 @pytest.fixture
 def auth_client(client, create_user):
     user = create_user(username="user", password="Test1234!")
@@ -32,7 +31,6 @@ def auth_client(client, create_user):
     return client, user
 
 
-# 🔥 ADMIN REAL (IMPORTANTE)
 @pytest.fixture
 def admin_client(client, create_user):
     user = create_user(
@@ -58,7 +56,6 @@ def create_game():
     return _create_game
 
 
-# ✅ LIST PUBLIC
 @pytest.mark.django_db
 def test_list_games_public(client, create_game):
     create_game(title="Game 1", price=10, is_active=True)
@@ -70,7 +67,6 @@ def test_list_games_public(client, create_game):
     assert len(response.data) == 1
 
 
-# ✅ LIST ADMIN
 @pytest.mark.django_db
 def test_list_games_admin(admin_client, create_game):
     client, _ = admin_client
@@ -84,7 +80,6 @@ def test_list_games_admin(admin_client, create_game):
     assert len(response.data) == 2
 
 
-# ✅ CREATE ADMIN
 @pytest.mark.django_db
 def test_create_game_admin(admin_client):
     client, _ = admin_client
@@ -101,7 +96,6 @@ def test_create_game_admin(admin_client):
     assert response.status_code == 201
 
 
-# ❌ CREATE USER
 @pytest.mark.django_db
 def test_create_game_user_forbidden(auth_client):
     client, _ = auth_client
@@ -114,7 +108,6 @@ def test_create_game_user_forbidden(auth_client):
     assert response.status_code in [403, 401]
 
 
-# ✅ SEARCH
 @pytest.mark.django_db
 def test_search_game(client, create_game):
     create_game(title="FIFA 24", price=10, is_active=True)
@@ -126,7 +119,6 @@ def test_search_game(client, create_game):
     assert len(response.data) == 1
 
 
-# ✅ FILTER
 @pytest.mark.django_db
 def test_filter_games(client, create_game):
     create_game(title="Game 1", price=10, is_active=True)
@@ -138,7 +130,6 @@ def test_filter_games(client, create_game):
     assert len(response.data) == 1
 
 
-# ✅ ORDERING (FIX 🔥)
 @pytest.mark.django_db
 def test_ordering_games(client, create_game):
     create_game(title="Game 1", price=30, is_active=True)
@@ -147,10 +138,9 @@ def test_ordering_games(client, create_game):
     response = client.get("/api/games/?ordering=price")
 
     assert response.status_code == 200
-    assert float(response.data[0]["price"]) == 10  # 🔥 FIX
+    assert float(response.data[0]["price"]) == 10 
 
 
-# ✅ SOFT DELETE (FIX 🔥)
 @pytest.mark.django_db
 def test_soft_delete_game(admin_client, create_game):
     client, _ = admin_client
@@ -159,7 +149,7 @@ def test_soft_delete_game(admin_client, create_game):
 
     response = client.delete(f"/api/games/{game.id}/")
 
-    print(response.data)  # 👈 debug si falla
+    print(response.data) 
 
     assert response.status_code == 204
 
@@ -167,7 +157,6 @@ def test_soft_delete_game(admin_client, create_game):
     assert game.is_active is False
 
 
-# ❌ DELETE USER
 @pytest.mark.django_db
 def test_delete_game_user_forbidden(auth_client, create_game):
     client, _ = auth_client
